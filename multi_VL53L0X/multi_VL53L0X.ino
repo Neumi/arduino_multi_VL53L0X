@@ -6,10 +6,11 @@ VL53L0X sensorB;
 VL53L0X sensorC;
 VL53L0X sensorD;
 
-int sensor_a_xshut_pin = 4;
-int sensor_b_xshut_pin = 5;
-int sensor_c_xshut_pin = 6;
-int sensor_d_xshut_pin = 7;
+byte sensor_a_xshut_pin = 4;
+byte sensor_b_xshut_pin = 5;
+byte sensor_c_xshut_pin = 6;
+byte sensor_d_xshut_pin = 7;
+
 
 int sensor_a_distance;
 int sensor_b_distance;
@@ -24,16 +25,11 @@ void setup()
   Wire.begin();
   Serial.begin(115200);
 
-  pinMode(sensor_a_xshut_pin, OUTPUT);
-  pinMode(sensor_b_xshut_pin, OUTPUT);
-  pinMode(sensor_c_xshut_pin, OUTPUT);
-  pinMode(sensor_d_xshut_pin, OUTPUT);
-
-  digitalWrite(sensor_a_xshut_pin, LOW);
-  digitalWrite(sensor_b_xshut_pin, LOW);
-  digitalWrite(sensor_c_xshut_pin, LOW);
-  digitalWrite(sensor_d_xshut_pin, LOW);
-
+  setupSensorPin(sensor_a_xshut_pin);
+  setupSensorPin(sensor_b_xshut_pin);
+  setupSensorPin(sensor_c_xshut_pin);
+  setupSensorPin(sensor_d_xshut_pin);
+  
   sensorA = initializeSensor(sensor_a_xshut_pin, sensorA);
   sensorB = initializeSensor(sensor_b_xshut_pin, sensorB);
   sensorC = initializeSensor(sensor_c_xshut_pin, sensorC);
@@ -63,14 +59,19 @@ void loop() {
   Serial.println("");
 }
 
+void setupSensorPin(byte pin) {
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, LOW);
+}
+
 int cleanSensorData(int raw_input) {
-  if (raw_input > 1300) {
+  if (raw_input > 1300) { // capping raw input
     return 1300;
   }
   return raw_input;
 }
 
-VL53L0X initializeSensor(int xshut_pin, VL53L0X sensor) {
+VL53L0X initializeSensor(byte xshut_pin, VL53L0X sensor) {
   digitalWrite(xshut_pin, HIGH);
   delay(50);
   sensor.init(true);
